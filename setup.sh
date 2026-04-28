@@ -11,7 +11,19 @@ install_node() {
 # Função para instalar dependências do Python
 install_python() {
     echo "Instalando dependências do Python..."
+
     cd python-llm || exit
+
+    if [ ! -d ".venv" ]; then
+        python -m venv .venv
+    fi
+
+    if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
+        source .venv/Scripts/activate
+    else
+        source .venv/bin/activate
+    fi
+
     pip install -r requirements.txt
     cd - || exit
 }
@@ -27,21 +39,23 @@ dev_node() {
 # Função para executar o modo de desenvolvimento do Python
 dev_python() {
     echo "Iniciando servidor Python no modo de desenvolvimento..."
-    
-    # Cria e ativa o ambiente virtual
-    python -m venv .venv
 
-    # Verifica o sistema operacional para ativar o ambiente virtual corretamente
+    cd python-llm || exit
+
+    if [ ! -d ".venv" ]; then
+        echo "Ambiente virtual nao encontrado. Execute ./setup.sh install-python primeiro."
+        cd - || exit
+        return 1
+    fi
+
     if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "cygwin" ]]; then
-        # Para Windows
         source .venv/Scripts/activate
     else
-        # Para Linux/Mac
         source .venv/bin/activate
     fi
 
-    cd python-llm || exit
-    uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    uvicorn app.main:app --reload --host 0.0.0.0 --port 5000
+    cd - || exit
 }
 
 # Verifica o comando passado como argumento
@@ -62,6 +76,36 @@ case $1 in
     dev-python)
         dev_python
         ;;
+    start-node)
+        dev_node
+        ;;
+    start-python)
+        dev_python
+        ;;
+    dev)
+        echo "Iniciando Node.js e Python em modo de desenvolvimento..."
+        dev_python &
+        sleep 3
+        dev_node
+        ;;
+    start)
+        echo "Iniciando Node.js e Python..."
+        dev_python &
+        sleep 3
+        dev_node
+        ;;
+    dev-all)
+        echo "Iniciando Node.js e Python em modo de desenvolvimento..."
+        dev_python &
+        sleep 3
+        dev_node
+        ;;
+    start-all)
+        echo "Iniciando Node.js e Python..."
+        dev_python &
+        sleep 3
+        dev_node
+        ;;
     *)
         echo "Comando inválido. Use um dos seguintes:"
         echo "  install-node     - Instala dependências do Node.js"
@@ -69,5 +113,11 @@ case $1 in
         echo "  install          - Instala todas as dependências"
         echo "  dev-node         - Inicia o servidor Node.js no modo dev"
         echo "  dev-python       - Inicia o servidor Python no modo dev"
+        echo "  start-node       - Alias para dev-node (compatibilidade)"
+        echo "  start-python     - Alias para dev-python (compatibilidade)"
+        echo "  dev              - Inicia Node + Python juntos (1 terminal)"
+        echo "  start            - Alias para dev (1 terminal)"
+        echo "  dev-all          - Inicia Node + Python juntos (1 terminal)"
+        echo "  start-all        - Inicia Node + Python juntos (1 terminal)"
         ;;
 esac
