@@ -106,6 +106,8 @@ cd teste_desenvolvedor_jr_pl-1
 ./setup.sh install-python
 ```
 
+> **Alternativa:** Use `./setup.sh install` para instalar todas as dependencias (Node + Python) com um unico comando.
+
 > **Nota sobre o ambiente virtual (.venv):** O comando `install-python` cria automaticamente um ambiente virtual Python (`.venv`) e instala as dependencias dentro dele. Isso garante que as dependencias (FastAPI, LangChain, etc.) fiquem separadas do Python global do sistema, evitando conflitos de versao com outros projetos.
 
 **3. Configure as variaveis de ambiente:**
