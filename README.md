@@ -22,7 +22,7 @@ Sistema de resumo e traducao de textos automatizado, composto por dois microsser
 
 ## Tecnologias
 
-### Node API (Microsservico 1)
+### Node API (Microsserviço 1)
 
 | Tecnologia | Versão | Finalidade                              |
 | ---------- | ------ | --------------------------------------- |
